@@ -1,0 +1,13 @@
+<h1>Notes-All</h1>
+
+<%= JSON.stringify(notes) %>
+<hr>
+<% for(idx in notes){ %>
+    <h5><%= notes[idx].title %></h5>
+    <p><%= notes[idx].description %></p>
+    <a href="/notes/<%= notes[idx]._id %>">Details</a>
+    <a href="/notes/<%= notes[idx]._id %>/edit">Edit</a>
+    <hr>
+<% } %>
+
+<a href="/notes/new">Create a note</a>

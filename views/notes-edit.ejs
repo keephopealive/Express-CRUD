@@ -1,0 +1,11 @@
+<h1>Note-Edit</h1>
+<%= JSON.stringify(note) %>
+<hr>
+<p><%= messages.create_error_title %></p>
+<p><%= messages.create_error_description %></p>
+<form action="/notes/<%= note._id %>/update" method="post">
+    <input type="hidden" name="id" value="<%= note._id %>">
+    <input type="text" name="title" id="" value="<%= note.title %>">
+    <input type="text" name="description" id="" value="<%= note.description %>">
+    <input type="submit" value="Update the Note">
+</form>

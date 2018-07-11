@@ -1,0 +1,8 @@
+<h1>Notes-New</h1>
+<p><%= messages.create_error_title %></p>
+<p><%= messages.create_error_description %></p>
+<form action="/notes" method="post">
+    <input type="text" name="title" id="" value="<%= messages.title %>">
+    <input type="text" name="description" id="" value="<%= messages.description %>">
+    <input type="submit" value="Create a Note">
+</form>
