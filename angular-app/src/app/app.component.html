@@ -1,0 +1,11 @@
+<form (submit)="create(formObject.value)" #formObject="ngForm">
+  <input type="text" name="title" ngModel >
+  <input type="text" name="description" ngModel >
+  <input type="submit" value="Submit">
+</form>
+
+<li *ngFor="let note of notes">
+  {{ note | json }}
+  {{ note._id }}
+  <button (click)="deleteNote(note._id)">Delete</button>
+</li>

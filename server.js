@@ -9,6 +9,9 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// ============ Static Routes ============ 
+app.use(express.static(path.join(__dirname, "angular-app/dist/angular-app")));
+
 // ============ View Engine ============ 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -44,60 +47,44 @@ const NoteSchema = new mongoose.Schema({
 }, { timestamps: true });
 const Note = mongoose.model('Note', NoteSchema);
 
-// ============ Static Routes ============ 
-app.use(express.static(path.join(__dirname, "static")));
 
 // ============ Routes ============ 
-app.get('/', function (req, res) {
-    res.redirect('/notes');
-})
+
 app.get('/notes', function (req, res) {
     Note.find({}, function(err, notes){
-        res.render('notes-all', {notes: notes});
+        res.json(notes);
     })
 })
-app.get('/notes/new', function (req, res) {
-    res.render('notes-new');
-})
+// app.get('/notes/new', function (req, res) {
+//     res.render('notes-new');
+// })
 app.post('/notes', function (req, res) {
     console.log("app.post('/notes') req.body: ", req.body);
     const noteInstance = new Note();
     noteInstance.title = req.body.title;
     noteInstance.description= req.body.description;
-    noteInstance.save(function(err, data){
+    noteInstance.save(function(err, note){
         if (err) {
-            console.log("@@@@@@@@@@@@@@@@ err", err);
-            if(err.errors.title){
-                req.flash('create_error_title', err.errors.title.message)
-            }
-            if(err.errors.description){
-                req.flash('create_error_description', err.errors.description.message)
-            }
-            req.flash('title', req.body.title)
-            req.flash('description', req.body.description)
-            
-            res.redirect('/notes/new');
+            res.json(false);
         } else {
-            // saved
-            console.log("@@@@@@@@@@@@@@@@ data", data);
-            res.redirect('/notes');
+            res.json(note);
         }  
     })
 })
 
-app.get('/notes/:id/edit', function(req,res){
-    console.log("app.get('/notes/:id/edit') req.params.id: ", req.params.id);
-    Note.findOne({_id: req.params.id}, function(err, note){
-        res.render('notes-edit', { note: note });
-    })
-})
+// app.get('/notes/:id/edit', function(req,res){
+//     console.log("app.get('/notes/:id/edit') req.params.id: ", req.params.id);
+//     Note.findOne({_id: req.params.id}, function(err, note){
+//         res.render('notes-edit', { note: note });
+//     })
+// })
 
 app.get('/notes/:id', function(req, res){
     Note.findOne({_id:req.params.id }, function(err, note){
         if(note){
-            res.render('notes-details', {note: note})
+            res.json(note);
         } else {
-            res.redirect('/notes');
+            res.json(null);
         }
     })
 })
@@ -109,24 +96,26 @@ app.post('/notes/:id/update', function(req, res){
         note.description = req.body.description;
         note.save(function(err){
             if(err){
-                if(err.errors.title){
-                    req.flash('create_error_title', err.errors.title.message)
-                }
-                if(err.errors.description){
-                    req.flash('create_error_description', err.errors.description.message)
-                }
-                res.redirect('/notes/'+req.params.id+'/edit')
+                // if(err.errors.title){
+                    // req.flash('create_error_title', err.errors.title.message)
+                // }
+                // if(err.errors.description){
+                    // req.flash('create_error_description', err.errors.description.message)
+                // }
+                // res.redirect('/notes/'+req.params.id+'/edit')
+                res.json(false)
             } else {
-                res.redirect('/notes/'+req.params.id);
+                // res.redirect('/notes/'+req.params.id);
+                res.json(note)
             }
         })
     })
 })
 
-app.get("/notes/:id/delete", function(req, res){
+app.delete("/notes/:id", function(req, res){
     console.log("app.get('/notes/:id/delete'), id: ", req.params.id);
     Note.findOneAndDelete({_id: req.params.id}, function(query) {
-        res.redirect('/notes');
+        res.json(true);
     })
 })
 
