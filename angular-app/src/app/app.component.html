@@ -7,9 +7,7 @@
 
 <div *ngFor="let cake of cakes">
   <hr/>
-  
   <app-cake-details [cakeDetails]="cake"></app-cake-details>
-
   <div *ngFor="let rating of cake.ratings">
     Rating:{{ rating.rate }}
     Comment:{{ rating.comment }}

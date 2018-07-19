@@ -32,7 +32,7 @@ app.use(flash());
 
 // ============ Mongoose ============ 
 const mongoose = require('mongoose');
-mongoose.connect("mongodb://localhost/cakes_db")
+mongoose.connect("mongodb://localhost/cakes2_db")
 
 
 
@@ -81,12 +81,12 @@ const Cake = mongoose.model('Note', CakeSchema);
 // ============ Routes ============ 
 app.get('/cakes', function (req, res) {
     Cake.find({}, function(err, cakes){
-        res.json({status:true, payload:cakes});
+        res.json(cakes);
     })
 })
 app.get('/cakes/:id', function (req, res) {
     Cake.findOne({_id: req.params.id}, function(err, cake){
-        res.json({status:true, payload:cake});
+        res.json(cake);
     })
 })
 app.post('/cakes', function (req, res) {
@@ -97,8 +97,8 @@ app.post('/cakes', function (req, res) {
     cakeInstance.imgUrl = req.body.imgUrl;
     console.log(cakeInstance);
     cakeInstance.save(function(err){
-        if(err){ res.json({status:false, error:err}) }
-        else { res.json({status:true}) }
+        if(err){ res.json(false) }
+        else { res.json(true) }
     })
 })
 

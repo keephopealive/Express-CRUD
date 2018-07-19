@@ -26,19 +26,10 @@ export class AppComponent {
     });
   }
 
-  deleteNote(id) {
-    console.log(id);
-    const obs = this._noteService.deleteNote(id);
-    obs.subscribe( (response) => {
-      console.log('server response:', response);
-    });
-  }
-
   create(formData) {
     console.log(formData);
     const obs = this._cakeService.createCake(formData);
     obs.subscribe( (serverCake) => {
-      console.log("app.post('/cakes') server responded: ", serverCake);
       this.getCakes();
     });
   }
