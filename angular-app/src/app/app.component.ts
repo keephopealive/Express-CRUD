@@ -1,3 +1,4 @@
+import { CakeService } from './cake.service';
 import { NoteService } from './note.service';
 import { Component } from '@angular/core';
 
@@ -7,20 +8,21 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  notes: any = [];
+  cakes: any = [];
+  editCake = null;
 
-  constructor(private _noteService: NoteService) {
+  constructor(private _cakeService: CakeService) {
     console.log('AppComponent > Constructor');
-    this.getTasks();
+    this.getCakes();
   }
 
-  getTasks() {
+  getCakes() {
     console.log('AppComponent > getNotes()');
-    const obs = this._noteService.getNotes();
-    obs.subscribe( (response) => {
+    const obs = this._cakeService.getCakes();
+    obs.subscribe( (serverCakes) => {
       console.log('AppComponent > getTasks() Subscribe');
-      console.log(response);
-      this.notes = response;
+      console.log(serverCakes);
+      this.cakes = serverCakes;
     });
   }
 
@@ -34,10 +36,19 @@ export class AppComponent {
 
   create(formData) {
     console.log(formData);
-    const obs = this._noteService.create(formData);
-    obs.subscribe( (response) => {
-      console.log('Response ', response);
-      this.getTasks();
+    const obs = this._cakeService.createCake(formData);
+    obs.subscribe( (serverCake) => {
+      console.log("app.post('/cakes') server responded: ", serverCake);
+      this.getCakes();
+    });
+  }
+
+  createRating(formData, cake_id) {
+    console.log(formData, cake_id);
+    this._cakeService.createRating(formData, cake_id)
+    .subscribe( (rating) => {
+      console.log(rating);
+      this.getCakes();
     });
   }
 

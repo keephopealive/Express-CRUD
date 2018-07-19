@@ -1,11 +1,29 @@
 <form (submit)="create(formObject.value)" #formObject="ngForm">
-  <input type="text" name="title" ngModel >
+  <input type="text" name="baker" ngModel >
   <input type="text" name="description" ngModel >
+  <input type="text" name="imgUrl" ngModel >
   <input type="submit" value="Submit">
 </form>
 
-<li *ngFor="let note of notes">
-  {{ note | json }}
-  {{ note._id }}
-  <button (click)="deleteNote(note._id)">Delete</button>
-</li>
+<div *ngFor="let cake of cakes">
+  <hr/>
+  
+  <app-cake-details [cakeDetails]="cake"></app-cake-details>
+
+  <div *ngFor="let rating of cake.ratings">
+    Rating:{{ rating.rate }}
+    Comment:{{ rating.comment }}
+  </div>
+  <form (submit)="createRating(formObject.value, cake._id)" #formObject="ngForm">
+      <input type="text" name="rate" ngModel >
+      <input type="text" name="comment" ngModel >
+      <input type="submit" value="Submit">
+  </form>
+  <button (click)="editCake = cake">Edit this Cake</button>
+</div>
+
+
+<div *ngIf="editCake">
+  <h1>Edit Cake</h1>
+  {{editCake.baker}}
+</div>

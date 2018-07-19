@@ -32,95 +32,86 @@ app.use(flash());
 
 // ============ Mongoose ============ 
 const mongoose = require('mongoose');
-mongoose.connect("mongodb://localhost/notes_db")
-const NoteSchema = new mongoose.Schema({
-    title: { 
+mongoose.connect("mongodb://localhost/cakes_db")
+
+
+
+// Rating Schema
+// const mongoose = require('mongoose');
+const RatingSchema = new mongoose.Schema({
+    rate: { 
+        type: Number, 
+        required: [true, "Rate must exist."]
+    },
+    comment: { 
         type: String, 
-        required: [true, "Title must exist."],
-        minlength: [3, "Title must be at least 3 characters long"]
+        required: [true, "Comment must exist."]
+    },
+}, { timestamps: true });
+const Rating = mongoose.model('Rating', RatingSchema);
+
+
+// Cake Schema
+// const mongoose = require('mongoose');
+const CakeSchema = new mongoose.Schema({
+    baker: { 
+        type: String, 
+        required: [true, "Baker must exist."],
+        minlength: [3, "Baker must be at least 3 characters long"]
     },
     description: { 
         type: String, 
         required: [true, "Description must exist."],
         minlength: [3, "Description must be at least 3 characters long"]
     },
+    imgUrl: { 
+        type: String, 
+        required: [true, "Image URL must exist."],
+        minlength: [3, "Image URL must be at least 3 characters long"]
+    },
+    ratings: { 
+        type: [RatingSchema], 
+        required: [true, "Image URL must exist."],
+        minlength: [3, "Image URL must be at least 3 characters long"]
+    },
 }, { timestamps: true });
-const Note = mongoose.model('Note', NoteSchema);
+const Cake = mongoose.model('Note', CakeSchema);
 
 
 // ============ Routes ============ 
-
-app.get('/notes', function (req, res) {
-    Note.find({}, function(err, notes){
-        res.json(notes);
+app.get('/cakes', function (req, res) {
+    Cake.find({}, function(err, cakes){
+        res.json({status:true, payload:cakes});
     })
 })
-// app.get('/notes/new', function (req, res) {
-//     res.render('notes-new');
-// })
-app.post('/notes', function (req, res) {
-    console.log("app.post('/notes') req.body: ", req.body);
-    const noteInstance = new Note();
-    noteInstance.title = req.body.title;
-    noteInstance.description= req.body.description;
-    noteInstance.save(function(err, note){
-        if (err) {
-            res.json(false);
-        } else {
-            res.json(note);
-        }  
+app.get('/cakes/:id', function (req, res) {
+    Cake.findOne({_id: req.params.id}, function(err, cake){
+        res.json({status:true, payload:cake});
     })
 })
-
-// app.get('/notes/:id/edit', function(req,res){
-//     console.log("app.get('/notes/:id/edit') req.params.id: ", req.params.id);
-//     Note.findOne({_id: req.params.id}, function(err, note){
-//         res.render('notes-edit', { note: note });
-//     })
-// })
-
-app.get('/notes/:id', function(req, res){
-    Note.findOne({_id:req.params.id }, function(err, note){
-        if(note){
-            res.json(note);
-        } else {
-            res.json(null);
-        }
+app.post('/cakes', function (req, res) {
+    console.log("app.post('/cakes') req.body: ", req.body);
+    const cakeInstance = new Cake();
+    cakeInstance.baker = req.body.baker;
+    cakeInstance.description = req.body.description;
+    cakeInstance.imgUrl = req.body.imgUrl;
+    console.log(cakeInstance);
+    cakeInstance.save(function(err){
+        if(err){ res.json({status:false, error:err}) }
+        else { res.json({status:true}) }
     })
 })
 
-app.post('/notes/:id/update', function(req, res){
-    console.log("app.post('/notes/:id/update'), req.params.id: ", req.params.id, " req.body ", req.body);
-    Note.findOne({_id: req.params.id}, function(err, note){
-        note.title = req.body.title;
-        note.description = req.body.description;
-        note.save(function(err){
-            if(err){
-                // if(err.errors.title){
-                    // req.flash('create_error_title', err.errors.title.message)
-                // }
-                // if(err.errors.description){
-                    // req.flash('create_error_description', err.errors.description.message)
-                // }
-                // res.redirect('/notes/'+req.params.id+'/edit')
-                res.json(false)
-            } else {
-                // res.redirect('/notes/'+req.params.id);
-                res.json(note)
-            }
+app.put('/cakes/:id/rating', function(req, res){
+    console.log("app.put cake id rating");
+    console.log('cake id', req.params.id)
+    console.log('rating data', req.body)
+    Cake.findOne({_id: req.params.id}, function(err, cake){        
+        cake.ratings.push(req.body);
+        cake.save(function(err){
+            res.json(true);
         })
     })
-})
-
-app.delete("/notes/:id", function(req, res){
-    console.log("app.get('/notes/:id/delete'), id: ", req.params.id);
-    Note.findOneAndDelete({_id: req.params.id}, function(query) {
-        res.json(true);
-    })
-})
-
-
-
-
+})  
 // ============ Server ============ 
 app.listen(8000);
